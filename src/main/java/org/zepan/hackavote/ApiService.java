@@ -110,8 +110,6 @@ public class ApiService {
     }
 
 
-    // BALLLOTS
-
     @GET
     @Path("/elections/{electionid}/entries")
     @Produces({"application/xml", "application/json"})
@@ -166,4 +164,50 @@ public class ApiService {
         }
 
     }
+
+    @GET
+    @Path("/elections/{electionid}/entries/{entryid}")
+    @Produces({"application/xml", "application/json"})
+    @Consumes({"application/xml", "application/json"})
+    public Response getBallotEntry(@PathParam("electionid") Long electionid, @PathParam("entryid") Long entryid) {
+
+        log.debug("getting all all ballots for election : " + electionid);
+
+        Election election = ofy().load().type(Election.class).id(electionid).now();
+        if (election == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } else {
+            BallotEntry ballotentry = ofy().load().type(BallotEntry.class).id(entryid).now();
+
+            if (ballotentry == null)
+                return Response.status(Response.Status.NOT_FOUND).build();
+
+            return Response.ok(ballotentry).build();
+        }
+
+    }
+
+    @DELETE
+    @Path("/elections/{electionid}/entries/{entryid}")
+    @Produces({"application/xml", "application/json"})
+    @Consumes({"application/xml", "application/json"})
+    public Response deleteBallotEntry(@PathParam("electionid") Long electionid, @PathParam("entryid") Long entryid) {
+
+        log.debug("getting all all ballots for election : " + electionid);
+
+        Election election = ofy().load().type(Election.class).id(electionid).now();
+        if (election == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } else {
+            //BallotEntry ballotentry = ofy().load().type(BallotEntry.class).id(entryid).now();
+
+            ofy().delete().type(BallotEntry.class).id(entryid).now();
+
+            return Response.ok().build();
+        }
+
+    }
+
+
+
 }
